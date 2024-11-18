@@ -2,49 +2,128 @@ package expo.modules.hftokenizers
 
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import java.net.URL
+import expo.modules.kotlin.Promise
+
+import ai.djl.huggingface.tokenizers.Encoding
+import ai.djl.huggingface.tokenizers.HuggingFaceTokenizer
+import android.os.Build
+import androidx.annotation.RequiresApi
+import expo.modules.kotlin.exception.CodedException
+
+import java.net.URI
+import java.nio.file.Path
+import java.nio.file.Paths
 
 class ExpoHfTokenizersModule : Module() {
-  // Each module class must implement the definition function. The definition consists of components
-  // that describes the module's functionality and behavior.
-  // See https://docs.expo.dev/modules/module-api for more details about available components.
   override fun definition() = ModuleDefinition {
-    // Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument.
-    // Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
-    // The module will be accessible from `requireNativeModule('ExpoHfTokenizers')` in JavaScript.
     Name("ExpoHfTokenizers")
 
-    // Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
-    Constants(
-      "PI" to Math.PI
-    )
 
-    // Defines event names that the module can send to JavaScript.
-    Events("onChange")
+    fun getTokenizer(modelPath: String): HuggingFaceTokenizer {
+      return try {
+        val tokenizerModel: Path
+        if (modelPath.startsWith("file")) {
+          tokenizerModel = Paths.get(URI(modelPath))
+        } else {
+          tokenizerModel = Paths.get(modelPath);
+        }
 
-    // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
-    Function("hello") {
-      "Hello world! 👋"
-    }
-
-    // Defines a JavaScript function that always returns a Promise and whose native code
-    // is by default dispatched on the different thread than the JavaScript runtime runs on.
-    AsyncFunction("setValueAsync") { value: String ->
-      // Send an event to JavaScript.
-      sendEvent("onChange", mapOf(
-        "value" to value
-      ))
-    }
-
-    // Enables the module to be used as a native view. Definition components that are accepted as part of
-    // the view definition: Prop, Events.
-    View(ExpoHfTokenizersView::class) {
-      // Defines a setter for the `url` prop.
-      Prop("url") { view: ExpoHfTokenizersView, url: URL ->
-        view.webView.loadUrl(url.toString())
+        HuggingFaceTokenizer.newInstance(tokenizerModel)
+      } catch (e: Exception) {
+        throw RuntimeException(e)
       }
-      // Defines an event that the view can send to JavaScript.
-      Events("onLoad")
+    }
+
+    fun formatOutput(encoding: Encoding): Map<String, Any> {
+      return mapOf(
+        "ids" to encoding.ids.toList(),
+        "attentionMask" to encoding.attentionMask.toList(),
+        "tokens" to encoding.tokens.toList()
+      )
+    }
+
+    AsyncFunction("encode") { modelPath: String, text: String, promise: Promise ->
+      try {
+        getTokenizer(modelPath).use { tokenizer ->
+          promise.resolve(formatOutput(tokenizer.encode(text)))
+        }
+      } catch (e: Exception) {
+        promise.reject(CodedException(e.message));
+      }
+    }
+
+    AsyncFunction("encodeWithExtra") { modelPath: String, text: String, addSpecialTokens: Boolean, withOverflowingTokens: Boolean, promise: Promise ->
+      try {
+        getTokenizer(modelPath).use { tokenizer ->
+          promise.resolve(formatOutput(tokenizer.encode(text, addSpecialTokens, withOverflowingTokens)))
+        }
+      } catch (e: Exception) {
+        promise.reject(CodedException(e.message))
+      }
+    }
+
+    AsyncFunction("batchEncode") { modelPath: String, texts: List<String>, promise: Promise ->
+      try {
+        getTokenizer(modelPath).use { tokenizer ->
+          val output = texts.map { formatOutput(tokenizer.encode(it)) }
+          promise.resolve(output)
+        }
+      } catch (e: Exception) {
+        promise.reject(CodedException(e.message))
+      }
+    }
+
+    AsyncFunction("batchEncodeWithExtra") { modelPath: String, texts: List<String>, addSpecialTokens: Boolean, withOverflowingTokens: Boolean, promise: Promise ->
+      try {
+        getTokenizer(modelPath).use { tokenizer ->
+          val output = texts.map { formatOutput(tokenizer.encode(it, addSpecialTokens, withOverflowingTokens)) }
+          promise.resolve(output)
+        }
+      } catch (e: Exception) {
+        promise.reject(CodedException(e.message))
+      }
+    }
+
+    AsyncFunction("decode") { modelPath: String, ids: List<Long>, promise: Promise ->
+      try {
+        getTokenizer(modelPath).use { tokenizer ->
+          promise.resolve(tokenizer.decode(ids.toLongArray()))
+        }
+      } catch (e: Exception) {
+        promise.reject(CodedException(e.message))
+      }
+    }
+
+    AsyncFunction("decodeWithExtra") { modelPath: String, ids: List<Long>, skipSpecialTokens: Boolean, promise: Promise ->
+      try {
+        getTokenizer(modelPath).use { tokenizer ->
+          promise.resolve(tokenizer.decode(ids.toLongArray(), skipSpecialTokens))
+        }
+      } catch (e: Exception) {
+        promise.reject(CodedException(e.message))
+      }
+    }
+
+    AsyncFunction("batchDecode") { modelPath: String, batchIds: List<List<Long>>, promise: Promise ->
+      try {
+        getTokenizer(modelPath).use { tokenizer ->
+          val output = batchIds.map { tokenizer.decode(it.toLongArray()) }
+          promise.resolve(output)
+        }
+      } catch (e: Exception) {
+        promise.reject(CodedException(e.message))
+      }
+    }
+
+    AsyncFunction("batchDecodeWithExtra") { modelPath: String, batchIds: List<List<Long>>, skipSpecialTokens: Boolean, promise: Promise ->
+      try {
+        getTokenizer(modelPath).use { tokenizer ->
+          val output = batchIds.map { tokenizer.decode(it.toLongArray(), skipSpecialTokens) }
+          promise.resolve(output)
+        }
+      } catch (e: Exception) {
+        promise.reject(CodedException(e.message))
+      }
     }
   }
 }

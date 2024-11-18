@@ -41,3 +41,10 @@ android {
     abortOnError false
   }
 }
+
+dependencies {
+  implementation 'ai.djl:api:0.30.0'
+  // implementation project(":${project.name}\$tokenizer-native-release")
+  implementation files('libs/tokenizers-0.31.0-SNAPSHOT.jar')
+  implementation fileTree(dir: "libs", include: ["*.aar"])
+}
