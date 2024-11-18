@@ -20,7 +20,7 @@ npm install @naveen521kk/expo-hf-tokenizers
 
 ### Example
 
-See [example][https://github.com/naveen521kk/expo-hf-tokenizers/tree/main/example] folder for a simple example on how to use it.
+See [example](https://github.com/naveen521kk/expo-hf-tokenizers/tree/main/example) folder for a simple example on how to use it.
 
 See [this file](https://github.com/naveen521kk/expo-hf-tokenizers/blob/main/src/ExpoHfTokenizersModule.ts) for a list of exported functions available.
 
