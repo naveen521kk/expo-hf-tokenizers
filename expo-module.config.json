@@ -1,0 +1,17 @@
+{
+  "platforms": [
+    "apple",
+    "android",
+    "web"
+  ],
+  "apple": {
+    "modules": [
+      "ExpoHfTokenizersModule"
+    ]
+  },
+  "android": {
+    "modules": [
+      "expo.modules.hftokenizers.ExpoHfTokenizersModule"
+    ]
+  }
+}

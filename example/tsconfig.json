@@ -1,0 +1,10 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "expo-hf-tokenizers": ["../src/index"],
+      "expo-hf-tokenizers/*": ["../src/*"]
+    }
+  }
+}
