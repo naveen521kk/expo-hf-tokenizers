@@ -1,6 +1,6 @@
 {
   "name": "@naveen521kk/expo-hf-tokenizers",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "Port of HuggingFace's tokenizers using Expo Modules for React Native Apps",
   "main": "build/index.js",
   "types": "build/index.d.ts",
