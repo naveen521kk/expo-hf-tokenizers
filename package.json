@@ -1,5 +1,5 @@
 {
-  "name": "expo-hf-tokenizers",
+  "name": "@naveen521kk/expo-hf-tokenizers",
   "version": "0.1.0",
   "description": "Port of HuggingFace's tokenizers using Expo Modules for React Native Apps",
   "main": "build/index.js",
@@ -13,13 +13,16 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "open:ios": "xed example/ios",
-    "open:android": "open -a \"Android Studio\" example/android"
+    "open:android": "open -a \"Android Studio\" example/android",
+    "release": "release-it"
   },
   "keywords": [
     "react-native",
     "expo",
     "expo-hf-tokenizers",
-    "ExpoHfTokenizers"
+    "ExpoHfTokenizers",
+    "tokenizers",
+    "HuggingFace"
   ],
   "repository": "https://github.com/naveen521kk/expo-hf-tokenizers",
   "bugs": {
@@ -28,17 +31,21 @@
   "author": "Naveen M K <naveen521kk@gmail.com> (naveen521kk)",
   "license": "MIT",
   "homepage": "https://github.com/naveen521kk/expo-hf-tokenizers#readme",
-  "dependencies": {},
   "devDependencies": {
     "@types/react": "~18.3.12",
-    "expo-module-scripts": "^4.0.2",
     "expo": "~52.0.0",
-    "react-native": "0.76.0"
+    "expo-module-scripts": "^4.0.2",
+    "react-native": "0.76.0",
+    "release-it": "^17.10.0"
   },
   "peerDependencies": {
     "expo": "*",
     "react": "*",
     "react-native": "*"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
